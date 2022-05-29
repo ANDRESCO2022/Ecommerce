@@ -16,7 +16,7 @@ const {
   deleteUser,
   login,
   GetOrderById,
-  GetAllOrdersByUser,
+  GetAllOrdersUser,
   GetAllProductsMe,
   checkToken,
 } = require('../controllers/usersController');
@@ -27,12 +27,12 @@ router.post('/', createUser);
 
 router.post('/login', login);
 
-//router.use(protectToken);
+router.use(protectToken);
 
 router.get('/me', GetAllProductsMe);
 
 router.get('/check-token', checkToken);
-router.get('/orders', GetAllOrdersByUser);
+router.get('/orders', GetAllOrdersUser);
 router.get('/orders/:id', GetOrderById);
 router
   .route('/:id')

@@ -6,8 +6,10 @@ const dotenv = require('dotenv');
 
 // Models
 const { User } = require('../models/userModel');
-
-
+const { Product } = require('../models/productsModel');
+const { Order } = require('../models/ordersModel');
+const { Cart } = require('../models/cartModel');
+const { ProductInCart } = require('../models/productsCartModel');
 
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
@@ -15,9 +17,8 @@ const { AppError } = require('../utils/appError');
 
 dotenv.config({ path: './config.env' });
 
-
 const createUser = catchAsync(async (req, res, next) => {
-  const { username, email, password} = req.body;
+  const { username, email, password, role } = req.body;
 
   const salt = await bcrypt.genSalt(12);
   const hashPassword = await bcrypt.hash(password, salt);
@@ -26,10 +27,9 @@ const createUser = catchAsync(async (req, res, next) => {
     username,
     email,
     password: hashPassword,
- 
+    role,
   });
 
-  // Remove password from response
   newUser.password = undefined;
 
   res.status(201).json({ newUser });
@@ -37,9 +37,9 @@ const createUser = catchAsync(async (req, res, next) => {
 
 const updateUser = catchAsync(async (req, res, next) => {
   const { user } = req;
-  const { name } = req.body;
+  const { username, email } = req.body;
 
-  await user.update({ name });
+  await user.update({ username, email });
 
   res.status(200).json({ status: 'success' });
 });
@@ -75,15 +75,18 @@ const login = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ token, user });
 });
-const GetAllOrdersByUser = catchAsync(async (req, res, next) => {
+const GetAllOrdersUser = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
+
   const orders = await Order.findAll({
     where: { userId: sessionUser.id, status: 'active' },
     include: [
       {
-        model: Meal,
-        attributes: ['name', 'price'],
-        include: [{ model: Restaurant, attributes: ['name'] }],
+        model: Cart,
+        // where: { status: 'active' },
+        // required: 'true',
+        // attributes: { include: ['productId, quantity'] },
+       
       },
     ],
   });
@@ -91,24 +94,20 @@ const GetAllOrdersByUser = catchAsync(async (req, res, next) => {
   res.status(200).json({ orders });
 });
 const GetAllProductsMe = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
+  const { sessionUser } = req;
 
-  const order = await Order.findOne({
-    where: { id },
+  const products = await Product.findAll({
+    where: { userId: sessionUser.id, status: 'active' },
     include: [
       {
-        model: Meal,
-        attributes: ['name', 'price'],
-        include: [{ model: Restaurant, attributes: ['name'] }],
+        model: User,
+        attributes: { exclude: ['password'] },
       },
     ],
   });
 
-  res.status(200).json({
-    order,
-  });
+  res.status(200).json({ products });
 });
-
 const checkToken = catchAsync(async (req, res, next) => {
   res.status(200).json({ user: req.sessionUser });
 });
@@ -119,10 +118,8 @@ const GetOrderById = catchAsync(async (req, res, next) => {
     where: { id },
     include: [
       {
-        model: Meal,
-        attributes: ['name', 'price'],
-        include: [{ model: Restaurant, attributes: ['name'] }],
-      },
+        model: Cart,
+      }
     ],
   });
 
@@ -133,7 +130,7 @@ const GetOrderById = catchAsync(async (req, res, next) => {
 
 module.exports = {
   GetOrderById,
-  GetAllOrdersByUser,
+  GetAllOrdersUser,
   GetAllProductsMe,
   createUser,
   updateUser,

@@ -16,12 +16,12 @@ const Product = db.define('product', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  quantify: {
+  quantity: {
      type: DataTypes.INTEGER,
     allowNull: false,
   },
   price: {
-     type: DataTypes.INTEGER,
+     type: DataTypes.DECIMAL(10,2),
     allowNull: false,
   },
   userId: {

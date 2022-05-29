@@ -23,9 +23,9 @@ router.use(protectToken);
 
 router.post('/add-product', addPoductToCart);
  router.patch('/update-cart',updateProductToCart)
- router.delete('/:productId', deleteProductToCart);
  router.post('/purchase',purchaseProductToCart); 
-
+ 
+ router.delete('/:productId', deleteProductToCart);
 
   
 

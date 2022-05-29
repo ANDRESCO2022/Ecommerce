@@ -4,6 +4,10 @@ const express = require('express');
 const { productExists } = require('../middlewares/productMiddlewares')
 const { protectToken } = require('../middlewares/userMiddlewares');
 
+const { 
+  createProductValidations,
+  checkValidations
+} = require('../middlewares/validationsMiddlewares')
 // Controller
 const {
 createProduct,
@@ -18,6 +22,10 @@ deleteProduct,
 
 const router = express.Router();
 
+router.get('/', getProductsAvailable);
+router.get('/:id', getProductById);
+
+
 router.use(protectToken);
 
 // router
@@ -25,16 +33,19 @@ router.use(protectToken);
 //   .get(getAllPosts)
 //   .post(upload.array('postImgs', 3), createPost);
 
-router.post('/', createProduct);
-router.get('/', getProductsAvailable);
+router.post(
+  '/',
+  checkValidations,
+ createProductValidations,
+  createProduct
+);
 
 
 
 router
   .use('/:id', productExists)
   .route('/:id')
-  .get(getProductById)
-  .patch(updateProduct)
+    .patch(updateProduct)
   .delete(deleteProduct);
 
 module.exports = { productRouter: router };

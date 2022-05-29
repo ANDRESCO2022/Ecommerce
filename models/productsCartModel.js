@@ -16,7 +16,7 @@ const ProductCart = db.define('productCart', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  quantify: {
+  quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },

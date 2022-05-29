@@ -1,7 +1,7 @@
 const { body, validationResult } = require('express-validator');
 
 const createUserValidations = [
-  body('name').notEmpty().withMessage('Name cannot be empty'),
+  body('username').notEmpty().withMessage('Name cannot be empty'),
   body('email')
     .notEmpty()
     .withMessage('Email cannot be empty')
@@ -13,8 +13,19 @@ const createUserValidations = [
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long'),
 ];
-const createCommentValidations = [
-  body('text').notEmpty().withMessage('Text of  comment cannot be empty'),
+const createProductValidations = [
+  body('title').notEmpty().withMessage('Title cannot be empty'),
+  body('description').notEmpty().withMessage('Description cannot be empty'),
+  body('price')
+    .isFloat({ min: 0 })
+    // .custom(val => {
+    //   return val > 0;
+    // })
+    .withMessage('Price must  be greater than 0'),
+  body('quantity')
+    .isInt({ min: 1 })
+    .withMessage('quantity must  be greater than 0'),
+  body('categoryId').isInt({ min: 1 }).withMessage('invalid category'),
 ];
 
 const checkValidations = (req, res, next) => {
@@ -23,7 +34,6 @@ const checkValidations = (req, res, next) => {
   if (!errors.isEmpty()) {
     const messages = errors.array().map(({ msg }) => msg);
 
-    // [msg, msg, msg] -> 'msg. msg. msg'
     const errorMsg = messages.join('. ');
 
     return res.status(400).json({
@@ -38,5 +48,5 @@ const checkValidations = (req, res, next) => {
 module.exports = {
   createUserValidations,
   checkValidations,
-  createCommentValidations,
+  createProductValidations,
 };

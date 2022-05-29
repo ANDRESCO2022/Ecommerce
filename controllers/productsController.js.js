@@ -1,42 +1,41 @@
 const { Op } = require('sequelize');
 
 // Models
-const {   Product } = require('../models/productsModel');
+const { Product } = require('../models/productsModel');
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
 
 
 
 const createProduct = catchAsync(async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { title, description,price, quantity } = req.body;
+  const { sessionUser } = req;
+  const { categiryId } = req.params;
 
-  const salt = await bcrypt.genSalt(12);
-  const hashPassword = await bcrypt.hash(password, salt);
+  const newProduct = await Product.create({
+    title,
+    description,
+    price,
+    quantity,
+    categiryId,
+    userId: sessionUser.id,
+  }); 
 
-  const newUser = await User.create({
-    username,
-    email,
-    password: hashPassword,
-  });
-
-  // Remove password from response
-  newUser.password = undefined;
-
-  res.status(201).json({ newUser });
+  res.status(201).json({ newProduct });
 });
 
 const updateProduct = catchAsync(async (req, res, next) => {
-  const { user } = req;
-  const { name } = req.body;
+  const { product } = req;
+  const { title, description, price, quantity } = req.body;
 
-  await user.update({ name });
+  await product.update({ title, description, price, quantity });
 
   res.status(200).json({ status: 'success' });
 });
 const deleteProduct = catchAsync(async (req, res, next) => {
-  const { user } = req;
+  const { product } = req;
 
-  await user.update({ status: 'deleted' });
+  await product.update({ status: 'deleted' });
 
   res.status(200).json({
     status: 'success',
@@ -45,36 +44,35 @@ const deleteProduct = catchAsync(async (req, res, next) => {
 
 
 const getProductsAvailable = catchAsync(async (req, res, next) => {
-  const { sessionUser } = req;
-  const orders = await Order.findAll({
-    where: { userId: sessionUser.id, status: 'active' },
-    include: [
-      {
-        model: Meal,
-        attributes: ['name', 'price'],
-        include: [{ model: Restaurant, attributes: ['name'] }],
-      },
-    ],
+    const products = await Product.findAll({
+    where: {  status: 'active' },
+    // include: [
+    //   {
+    //     model: Meal,
+    //     attributes: ['name', 'price'],
+    //     include: [{ model: Restaurant, attributes: ['name'] }],
+    //   },
+    // ],
   });
 
-  res.status(200).json({ orders });
+  res.status(200).json({ products });
 });
 const getProductById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const order = await Order.findOne({
+  const products = await Product.findOne({
     where: { id },
-    include: [
-      {
-        model: Meal,
-        attributes: ['name', 'price'],
-        include: [{ model: Restaurant, attributes: ['name'] }],
-      },
-    ],
+    // include: [
+    //   {
+    //     model: Meal,
+    //     attributes: ['name', 'price'],
+    //     include: [{ model: Restaurant, attributes: ['name'] }],
+    //   },
+    // ],
   });
 
   res.status(200).json({
-    order,
+    products
   });
 });
 

@@ -7,7 +7,7 @@ const { globalErrorHandler } = require('./controllers/errorsController');
 
 // Routers
 const { usersRouter } = require('./routes/usersRoutes');
-const { productRouter } = require('./routes/productsRoutes');
+const {productRouter}= require('./routes/productsRoutes')
 const { cartRouter } = require('./routes/cartRoutes');
 
 
