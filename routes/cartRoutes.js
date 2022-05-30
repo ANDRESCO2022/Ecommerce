@@ -2,6 +2,7 @@ const express = require('express');
 
 // Middlewares
  const { carttExists } = require('../middlewares/cartMiddlewares')
+ const {productInCartExists} = require('../middlewares/productInCartMiddleware')
  const { protectToken } = require('../middlewares/userMiddlewares')
 
 // Controller
@@ -25,7 +26,7 @@ router.post('/add-product', addPoductToCart);
  router.patch('/update-cart',updateProductToCart)
  router.post('/purchase',purchaseProductToCart); 
  
- router.delete('/:productId', deleteProductToCart);
+ router.delete('/:productId', productInCartExists, deleteProductToCart);
 
   
 

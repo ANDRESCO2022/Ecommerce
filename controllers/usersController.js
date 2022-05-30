@@ -9,7 +9,7 @@ const { User } = require('../models/userModel');
 const { Product } = require('../models/productsModel');
 const { Order } = require('../models/ordersModel');
 const { Cart } = require('../models/cartModel');
-const { ProductInCart } = require('../models/productsCartModel');
+const { ProductCart } = require('../models/productCartModels');
 
 // Utils
 const { catchAsync } = require('../utils/catchAsync');

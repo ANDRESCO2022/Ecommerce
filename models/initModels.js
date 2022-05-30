@@ -4,7 +4,7 @@ const { Order } = require('./ordersModel');
 const { Cart } = require('./cartModel');
 const {ProductImg } = require('./productsImgModel');
 const {Category } = require('./categories');
-const {ProductCart } = require('./productsCartModel');
+const {ProductInCart } = require('./productCartModels');
 
 
 const initModels = () => {
@@ -17,9 +17,9 @@ const initModels = () => {
   //user-->cart
   User.hasOne(Cart);
   Cart.belongsTo(User);
-   // product--> productCart
-  Product.hasOne(ProductCart);
-  ProductCart.belongsTo(Product);
+  //  // product--> productCart
+  Product.hasOne(ProductInCart);
+  ProductInCart.belongsTo(Product);
   //PRODUCT--IMG
   Product.hasMany(ProductImg);
   ProductImg.belongsTo(Product);
@@ -32,11 +32,11 @@ const initModels = () => {
   Order.belongsTo(Cart);
   
   //cart-->productCart
-  Cart.hasMany(ProductCart);
-  ProductCart.belongsTo(Cart);
+  Cart.hasMany(ProductInCart);
+  ProductInCart.belongsTo(Cart);
 
-  Product.hasOne(ProductCart)
-  ProductCart.belongsTo(Product)
+  Product.hasOne(ProductInCart)
+  ProductInCart.belongsTo(Product)
 };
 
 module.exports = { initModels };
