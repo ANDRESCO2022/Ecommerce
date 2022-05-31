@@ -10,6 +10,11 @@ const {
 } = require('../middlewares/validationsMiddlewares')
 // Controller
 const {
+  getAllCategories,
+  createCategory,
+  updateCategory,
+} = require('../controllers/categoriesController');
+const {
 createProduct,
 getProductsAvailable,
 getProductById,
@@ -39,6 +44,10 @@ router.post(
  createProductValidations,
   createProduct
 );
+router.post('/categories', createCategory);
+router.get('/categories', getAllCategories);
+
+router.patch('/categories/:id', updateCategory);
 
 
 

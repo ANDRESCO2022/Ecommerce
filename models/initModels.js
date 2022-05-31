@@ -3,7 +3,7 @@ const { User } = require('./userModel');
 const { Order } = require('./ordersModel');
 const { Cart } = require('./cartModel');
 const {ProductImg } = require('./productsImgModel');
-const {Category } = require('./categories');
+const {Category } = require('./categoriesModels');
 const {ProductInCart } = require('./productCartModels');
 
 

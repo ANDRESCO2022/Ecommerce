@@ -1,9 +1,13 @@
 const express = require('express');
 
 // Middlewares
- const { carttExists } = require('../middlewares/cartMiddlewares')
+ const { cartExists } = require('../middlewares/cartMiddlewares')
  const {productInCartExists} = require('../middlewares/productInCartMiddleware')
  const { protectToken } = require('../middlewares/userMiddlewares')
+ const {
+   createProductInCartValidations,
+   checkValidations,
+ } = require('../middlewares/validationsMiddlewares');
 
 // Controller
 
@@ -22,7 +26,11 @@ router.use(protectToken);
 
 
 
-router.post('/add-product', addPoductToCart);
+router.post(
+    '/add-product',
+    createProductInCartValidations,
+    checkValidations,
+    addPoductToCart);
  router.patch('/update-cart',updateProductToCart)
  router.post('/purchase',purchaseProductToCart); 
  

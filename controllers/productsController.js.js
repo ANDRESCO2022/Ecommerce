@@ -5,19 +5,22 @@ const { Product } = require('../models/productsModel');
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
 
+const {Category}= require('../models/categoriesModels')
+
 
 
 const createProduct = catchAsync(async (req, res, next) => {
-  const { title, description,price, quantity } = req.body;
+  const { title, description,price, quantity, categoryId } = req.body;
   const { sessionUser } = req;
-  const { categiryId } = req.params;
+ 
+
 
   const newProduct = await Product.create({
     title,
     description,
     price,
     quantity,
-    categiryId,
+    categoryId,
     userId: sessionUser.id,
   }); 
 
@@ -26,7 +29,7 @@ const createProduct = catchAsync(async (req, res, next) => {
 
 const updateProduct = catchAsync(async (req, res, next) => {
   const { product } = req;
-  const { title, description, price, quantity } = req.body;
+  const { title, description, price, quantity} = req.body;
 
   await product.update({ title, description, price, quantity });
 
@@ -75,6 +78,7 @@ const getProductById = catchAsync(async (req, res, next) => {
     products
   });
 });
+
 
 
 
