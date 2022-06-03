@@ -5,7 +5,8 @@ const { Product } = require('../models/productsModel');
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
 
-const {Category}= require('../models/categoriesModels')
+const {Category}= require('../models/categoriesModels');
+const { user } = require('pg/lib/defaults');
 
 
 
@@ -49,13 +50,13 @@ const deleteProduct = catchAsync(async (req, res, next) => {
 const getProductsAvailable = catchAsync(async (req, res, next) => {
     const products = await Product.findAll({
     where: {  status: 'active' },
-    // include: [
-    //   {
-    //     model: Meal,
-    //     attributes: ['name', 'price'],
-    //     include: [{ model: Restaurant, attributes: ['name'] }],
-    //   },
-    // ],
+    include: [
+      {
+        model: Category,
+        attributes: ['name'],
+        include: [{ model: user, attributes: ['name'] }],
+      },
+    ],
   });
 
   res.status(200).json({ products });

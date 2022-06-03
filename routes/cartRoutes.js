@@ -34,7 +34,7 @@ router.post(
  router.patch('/update-cart',updateProductToCart)
  router.post('/purchase',purchaseProductToCart); 
  
- router.delete('/:productId', productInCartExists, deleteProductToCart);
+ router.delete('/:productId',deleteProductToCart);
 
   
 

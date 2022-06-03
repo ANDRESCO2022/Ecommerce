@@ -2,14 +2,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
-// require('crypto').randomBytes(64).toString('hex')
+
 
 // Models
 const { User } = require('../models/userModel');
 const { Product } = require('../models/productsModel');
 const { Order } = require('../models/ordersModel');
 const { Cart } = require('../models/cartModel');
-const { ProductCart } = require('../models/productCartModels');
+const { ProductInCart } = require('../models/productCartModels');
+const { Category } = require('../models/categoriesModels');
 
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
@@ -32,7 +33,7 @@ const createUser = catchAsync(async (req, res, next) => {
 
   newUser.password = undefined;
 
-  res.status(201).json({ newUser });
+  res.status(201).json({ newUser }).json({ status: 'success' });
 });
 
 const updateUser = catchAsync(async (req, res, next) => {
@@ -73,25 +74,36 @@ const login = catchAsync(async (req, res, next) => {
 
   user.password = undefined;
 
-  res.status(200).json({ token, user });
+  res.status(200).json({ token, user }).json({ status: 'success' });
 });
 const GetAllOrdersUser = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
 
   const orders = await Order.findAll({
-    where: { userId: sessionUser.id, status: 'active' },
+    attributes: ['id', 'totalPrice', 'createdAt'],
+    where: { userId: sessionUser.id },
     include: [
       {
         model: Cart,
-        // where: { status: 'active' },
-        // required: 'true',
-        // attributes: { include: ['productId, quantity'] },
-       
+        attributes: ['id', 'status'],
+        include: [
+          {
+            model: ProductInCart,
+            attributes: ['quantity', 'status'],
+            include: [
+              {
+                model: Product,
+                attributes: ['id', 'title', 'description', 'price'],
+                include: [{ model: Category, attributes: ['name'] }],
+              },
+            ],
+          },
+        ],
       },
     ],
   });
 
-  res.status(200).json({ orders });
+  res.status(200).json({ orders }).json({ status: 'success' });
 });
 const GetAllProductsMe = catchAsync(async (req, res, next) => {
   const { sessionUser } = req;
@@ -106,26 +118,45 @@ const GetAllProductsMe = catchAsync(async (req, res, next) => {
     ],
   });
 
-  res.status(200).json({ products });
+  res.status(200).json({ products }).json({ status: 'success' });
 });
 const checkToken = catchAsync(async (req, res, next) => {
   res.status(200).json({ user: req.sessionUser });
 });
 const GetOrderById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
+  const { sessionUser } = req;
 
-  const order = await Order.findOne({
-    where: { id },
+  const orders = await Order.findAll({
+    attributes: ['id', 'totalPrice', 'createdAt'],
+    where: { userId: sessionUser.id },
     include: [
       {
         model: Cart,
-      }
+        attributes: ['id', 'status'],
+        include: [
+          {
+            model: ProductInCart,
+            attributes: ['quantity', 'status'],
+            include: [
+              {
+                model: Product,
+                attributes: ['id', 'title', 'description', 'price'],
+                include: [{ model: Category, attributes: ['name'] }],
+              },
+            ],
+          },
+        ],
+      },
     ],
   });
 
-  res.status(200).json({
-    order,
-  });
+  res
+    .status(200)
+    .json({
+      orders,
+    })
+    .json({ status: 'success' });
 });
 
 module.exports = {

@@ -1,13 +1,12 @@
 const express = require('express');
 
 // Middlewares
-const { productExists } = require('../middlewares/productMiddlewares')
 const { protectToken } = require('../middlewares/userMiddlewares');
 
-const { 
+const {
   createProductValidations,
-  checkValidations
-} = require('../middlewares/validationsMiddlewares')
+  checkValidations,
+} = require('../middlewares/validationsMiddlewares');
 // Controller
 const {
   getAllCategories,
@@ -15,46 +14,35 @@ const {
   updateCategory,
 } = require('../controllers/categoriesController');
 const {
-createProduct,
-getProductsAvailable,
-getProductById,
-updateProduct,
-deleteProduct,
+  createProduct,
+  getProductsAvailable,
+  getProductById,
+  updateProduct,
+  deleteProduct,
 } = require('../controllers/productsController.js');
 
-// // Utils
-// const { upload } = require('../utils/multer');
+const {
+  protectProductOwner,
+  productExists
+} = require('../middlewares/productMiddlewares');
 
 const router = express.Router();
 
 router.get('/', getProductsAvailable);
-router.get('/:id', getProductById);
-
+router.get('/:id', productExists, getProductById);
 
 router.use(protectToken);
 
-// router
-//   .route('/')
-//   .get(getAllPosts)
-//   .post(upload.array('postImgs', 3), createPost);
-
-router.post(
-  '/',
-  checkValidations,
- createProductValidations,
-  createProduct
-);
+router.post('/', checkValidations, createProductValidations, createProduct);
 router.post('/categories', createCategory);
 router.get('/categories', getAllCategories);
 
 router.patch('/categories/:id', updateCategory);
 
-
-
 router
   .use('/:id', productExists)
   .route('/:id')
-    .patch(updateProduct)
-  .delete(deleteProduct);
+  .patch(protectProductOwner, updateProduct)
+  .delete(protectProductOwner, deleteProduct);
 
 module.exports = { productRouter: router };

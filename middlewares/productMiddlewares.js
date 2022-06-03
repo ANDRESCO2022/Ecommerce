@@ -2,6 +2,15 @@ const { Product } = require('../models/productsModel');
 const { catchAsync } = require('../utils/catchAsync');
 const { AppError } = require('../utils/appError');
 
+const protectProductOwner = catchAsync(async (req, res, next) => {
+   const { sessionUser, user } = req;
+
+   if (sessionUser.id !== user.id) {
+     return next(new AppError('You do not own this account', 403));
+   }
+
+   next();
+});
 const productExists = catchAsync( async (req, res, next) => {
 
     const { id } = req.params;
@@ -19,4 +28,4 @@ const productExists = catchAsync( async (req, res, next) => {
 
 });
 
-module.exports = { productExists };
+module.exports = { productExists,protectProductOwner };
